@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Benim Dünyam</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;900&family=Courier+Prime&family=Dancing+Script:wght@700&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            text-align: center;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            transition: background 1s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Resim Stilleri */
+        .gallery-img {
+            max-width: 90%;
+            max-height: 60vh;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+        }
+
+        .hidden { display: none !important; }
+        .fade-in { animation: fadeIn 0.8s ease-in-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* METİNLER */
+        .typewriter-text {
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.1rem;
+            min-height: 1.5em;
+            color: #ccc;
+            margin-top: 15px;
+            padding: 0 10px;
+        }
+
+        /* DÜNYA ANİMASYONU */
+        #world-anim { position: absolute; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; flex-direction: column; background: #000; z-index: 10; }
+        .earth { font-size: 120px; animation: zoomOutEarth 4s forwards; }
+        .big-text { position: absolute; font-size: 2rem; font-weight: 900; opacity: 0; animation: textZoomIn 3s 1s forwards; color: #ff4d4d; text-transform: uppercase; letter-spacing: 2px; width: 100%; }
+        
+        @keyframes zoomOutEarth { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(0.01); opacity: 0; } }
+        @keyframes textZoomIn { 0% { transform: scale(0.1); opacity: 0; } 80% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* ARA EKRANLAR */
+        .interim-screen {
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            position: absolute;
+            top: 0; left: 0;
+            z-index: 20;
+        }
+        .interim-text {
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.5rem;
+            border-right: 2px solid white;
+            white-space: nowrap;
+            overflow: hidden;
+            animation: typing 2s steps(30, end), blink-caret .75s step-end infinite;
+        }
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: white; } }
+
+        /* FİNAL MEKTUP STİLİ - GÜNCELLENDİ (SCROLL) */
+        #final-letter-container {
+            width: 90%;
+            max-width: 600px;
+            max-height: 70vh; /* Yükseklik sınırı */
+            overflow-y: auto; /* Dikey kaydırma açık */
+            padding: 25px;
+            box-sizing: border-box;
+            background: rgba(0, 0, 0, 0.6); /* Sadece karartma, blur yok */
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            animation: fadeIn 2s ease-in-out;
+            /* Scrollbar tasarımı */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.5) transparent;
+        }
+
+        /* Webkit tarayıcılar için scrollbar */
+        #final-letter-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        #final-letter-container::-webkit-scrollbar-thumb {
+            background-color: rgba(255,255,255,0.5);
+            border-radius: 10px;
+        }
+
+        .final-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #fff;
+            text-align: justify;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+        
+        .heart-icon {
+            font-size: 3rem;
+            color: #ff4d4d;
+            margin-bottom: 20px;
+            animation: heartbeat 1.5s infinite;
+            display: block;
+        }
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .hint { position: fixed; bottom: 30px; width: 100%; text-align: center; font-size: 0.8rem; opacity: 0.4; animation: blink 2s infinite; }
+        @keyframes blink { 50% { opacity: 0.2; } }
+
+    </style>
+</head>
+<body id="main-body" onload="startPart1()">
+
+    <div id="part1-container" class="hidden">
+        <img id="p1-img" src="" alt="Ölçü" class="gallery-img">
+        <h1 id="p1-text" style="font-weight: 300;"></h1>
+    </div>
+
+    <div id="world-anim" class="hidden">
+        <div class="earth">🌍</div>
+        <div class="big-text">DÜNYAAAALAR KADAR</div>
+    </div>
+
+    <div id="gallery-container" class="hidden" onclick="handleGalleryClick()">
+        <img id="gallery-img" src="" alt="Anı" class="gallery-img">
+        <div class="typewriter-text" id="gallery-caption"></div>
+        <div class="hint">(Devam etmek için ekrana dokun balım)</div>
+    </div>
+
+    <div id="interim-screen" class="interim-screen hidden" onclick="resumeGallery()">
+        <h2 id="interim-text" class="interim-text"></h2>
+    </div>
+
+    <div id="final-letter-container" class="hidden">
+        <span class="heart-icon">❤️</span>
+        <div class="final-text">
+            Seni çok seviyorum çocuk, ben her şeyden, herkesten çok.<br><br>
+            Üzüyoruz birbirimizi, kırıyoruz, olmayacak şeyler yapıyoruz ama başka yere gidemiyoruz. 
+            Ben gidemem senden başka yere, şifa arayamam. İlacım sende. 
+            Sen olmadan şu kalbin içinde niye atsın ki?<br><br>
+            Birbirimizi üzmeyelim, birbirimize sahip çıkalım. Çünkü benim sensiz bir geleceğim olsun istemiyorum ben.<br><br>
+            Gözlerin güneşim, kirpiklerin bulutlarım olsun. Her o gözleri kırpışında mevsimlerim, ömrüm geçsin yanında. 
+            Yaşlanayım seninle, yaşlanayım...
+        </div>
+        <div style="font-size: 0.8rem; opacity: 0.6; margin-top: 20px;">seni çok seviyorum</div>
+    </div>
+
+    <script>
+        // --- LİSTELER ---
+        
+        // 1. Kısım
+        const part2Photos = [
+            "1 hamarat.jpeg", "2 on parmağında on marifetli.jpeg", "3 moda duayeni.jpeg", "4 şaşırıklı.jpeg", "5 süslü.jpeg",
+            "6 bakımlı.jpeg", "7 çingene.jpeg", "8 edepli.jpeg", "9 keş.jpeg", "10 şarapcımı neyci allahın ayyaşı.jpeg",
+            "11 değnekçi.jpeg", "12 mafyatik.jpeg", "13 gerektiğinda ağız burun dalan.jpeg", "14 uykucu.jpeg", "15 uykulu.jpeg",
+            "16 fikri çoklu.jpeg", "17 şofööör.jpeg", "18 hemde usta şoför.jpeg", "19 agrasif.jpeg", "20 asi.jpeg",
+            "21 asil.jpeg", "22 hemde çok asil.jpeg", "23 hem asil hemde allah ım yarabbim bu ne güzellik.jpeg"
+        ];
+
+        // 2. Kısım
+        const part5Photos = [
+            "1 birazda benden bahsedelim .jpeg", "2 seni öpmekk.jpeg", "3 seni çook öpmek.jpeg", "4 seni allah yarattı demeden sabah akşam öpmek.jpeg",
+            "5 seni ısırmak.jpeg", "6 seni gizli gizli ısırmak.jpeg", "7 seni yemek.jpeg", "8 seni bi lokmada yemek.jpeg", 
+            "9 sana sirk maymunu olmak.jpeg", "10 sana sarılmak.jpeg", "11 sana bakmak.jpeg", "12 koynunda olmak.jpeg", 
+            "13 omsuna yatmak.jpeg", "14 kucağında uyumak.jpeg", "15 seni kalbime yaslamak.jpeg", "16 seninle el ele olmak.jpeg"
+        ];
+
+        // 3. Kısım
+        const part6Photos = [
+            "1 gülüşü gülden.jpeg", "2 bakışı evdenden.jpeg", "3 varlığı her şeyden güzel sevgilim benim.jpeg", "4 saçların ömrüme dolansın hiç salmasın.jpeg"
+        ];
+
+        let phase = 0; // 0:Part2, 1:Part5, 2:Part6
+        let index = 0;
+        let isTyping = false;
+
+        // Başlangıç
+        function startPart1() {
+            const c = document.getElementById('part1-container');
+            const img = document.getElementById('p1-img');
+            const txt = document.getElementById('p1-text');
+            c.classList.remove('hidden');
+
+            img.src = "az.jpeg"; txt.innerText = "bukadar değil"; c.classList.add('fade-in');
+            setTimeout(() => { img.src = "çok.jpeg"; txt.innerText = "bu kadar da değil"; }, 2500);
+            setTimeout(() => { img.src = "orta.jpeg"; txt.innerText = "bu kadar hiç değil..."; }, 5000);
+            setTimeout(() => { c.classList.add('hidden'); document.getElementById('world-anim').classList.remove('hidden'); }, 7500);
+            setTimeout(() => { document.getElementById('world-anim').classList.add('hidden'); startGallery(0); }, 11500);
+        }
+
+        function startGallery(p) {
+            phase = p; index = 0;
+            document.getElementById('gallery-container').classList.remove('hidden');
+            loadPhoto();
+        }
+
+        function loadPhoto() {
+            const imgEl = document.getElementById('gallery-img');
+            const capEl = document.getElementById('gallery-caption');
+            let filename = "";
+            
+            if(phase === 0) filename = part2Photos[index];
+            else if(phase === 1) filename = part5Photos[index];
+            else if(phase === 2) filename = part6Photos[index];
+
+            imgEl.src = filename;
+            imgEl.classList.remove('fade-in');
+            void imgEl.offsetWidth;
+            imgEl.classList.add('fade-in');
+
+            let cleanText = filename.replace(/^\d+\s*/, '').replace(/\.jpeg$/i, '');
+            typeWriter(cleanText, capEl);
+        }
+
+        function typeWriter(text, el) {
+            isTyping = true; el.innerHTML = ""; let i = 0;
+            function type() { if (i < text.length) { el.innerHTML += text.charAt(i); i++; setTimeout(type, 50); } else { isTyping = false; } }
+            type();
+        }
+
+        function handleGalleryClick() {
+            if(isTyping) return;
+
+            // ÖZEL DURUM: "benim sevdiğim şeyler" ara ekranı
+            if(phase === 1 && index === 0) {
+                document.getElementById('gallery-container').classList.add('hidden');
+                document.getElementById('interim-text').innerText = "benim sevdiğim şeylerden";
+                document.getElementById('interim-screen').classList.remove('hidden');
+                return;
+            }
+
+            let currentList = [];
+            if(phase === 0) currentList = part2Photos;
+            else if(phase === 1) currentList = part5Photos;
+            else if(phase === 2) currentList = part6Photos;
+
+            if(index < currentList.length - 1) {
+                index++; loadPhoto();
+            } else {
+                // Bölüm Bitti
+                if(phase === 0) startGallery(1); 
+                else if(phase === 1) startGallery(2); 
+                else if(phase === 2) {
+                    startFinal(); // FİNALE GEÇ
+                }
+            }
+        }
+
+        function resumeGallery() {
+            document.getElementById('interim-screen').classList.add('hidden');
+            document.getElementById('gallery-container').classList.remove('hidden');
+            index++; loadPhoto();
+        }
+
+        function startFinal() {
+            // Galeriyi gizle
+            document.getElementById('gallery-container').classList.add('hidden');
+            
+            // Arka planı değiştir
+            document.body.style.backgroundImage = "url('ermenek.png')";
+            
+            // Mektubu göster
+            document.getElementById('final-letter-container').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
